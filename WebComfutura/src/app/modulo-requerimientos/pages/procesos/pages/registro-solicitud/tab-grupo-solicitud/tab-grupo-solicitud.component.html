@@ -1,0 +1,325 @@
+
+
+<div class="row" style="background-color: yellow; font-weight: bold;"> 
+    <div class="col-md-4">
+        <div class="mt-2">
+            <label class=" control-label">Total Presupuesto</label>
+            <label class=" control-label ml-2">{{totalGeneralPres}}</label>
+        </div>
+    </div>      
+    <div class="col-md-4">
+        <div class="mt-2">
+            <label class=" control-label">Total Requerimiento</label>
+            <label class=" control-label ml-2">{{totalGeneralReq}}</label>
+        </div>
+    </div>  
+    <div class="col-md-4">
+        <div class="mt-2">
+            <label class=" control-label">Saldo Pendiente</label>
+            <label class=" control-label ml-2">{{saldoGeneralPend}}</label>
+        </div>
+    </div>                      
+</div>     
+
+<hr>
+<form [formGroup]="formParams" >
+
+    <div class="row" *ngIf="IdTipoTabsGlobal == 6" >
+        <div class="col-md-6">
+            <label for=""> Tipo de Concepto</label>
+            <br>
+            <select class="form-control comboBox "   formControlName="IdTipoMovCaja"    >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of tiposConcepto " [value]="item.id" >{{item.descripcion}}</option>
+            </select>
+        </div> 
+    </div> 
+
+    <div class="row">
+        <div class="col-md-12">
+            <label for="" *ngIf="IdTipoTabsGlobal == 4" >  Descripcion Detallada</label>
+            <label for="" *ngIf="IdTipoTabsGlobal == 5 || IdTipoTabsGlobal == 6" >  Concepto de gasto</label>
+            <input type="text" class="form-control " [ngClass]="{'disabledForm':IdTipoTabsGlobal == 4? true :false}"   formControlName="DescripcionDetallada" maxlength="500" placeholder=""  >
+        </div>                           
+    </div>     
+
+    <div class="row">
+        <div class="col-md-3">
+            <label for=""> UM </label>
+            <br>
+            <select class="form-control comboBox " [ngClass]="{'disabledForm':IdTipoTabsGlobal == 4? true :false}"   formControlName="AlmUmedCodigo" >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of unidadMedidas " [value]="item.id" >{{item.descripcion}}</option>
+            </select>
+        </div> 
+        <div class="col-md-3">
+            <label for=""> Cantidad </label>
+            <br>
+            <input type="text" class="form-control " (keypress)="keyPress($event)" (input)="changeCantidadPrecio($event)" formControlName="CantidadSolicitud"  placeholder=""  >
+        </div>
+        <div class="col-md-3">
+            <label for=""> Precio </label>
+            <br>
+            <input type="text" class="form-control   " [ngClass]="{'disabledForm':IdTipoTabsGlobal == 4? true :false}"   (keypress)="keyPress($event)" (input)="changeCantidadPrecio($event)" formControlName="PrecioSolicitud"   placeholder=""  >
+        </div>
+        <div class="col-md-3">
+            <label for=""> Costo Total </label>
+            <br>
+            <input type="text" class="form-control disabledForm " formControlName="CostoSolicitud"  placeholder=""  >
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <label for=""> Tipo Doc </label>
+            <br>
+            <select class="form-control comboBox "   formControlName="IdTipoPersonal" (change)="changeTipoDocPersonal($event)"  >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of tiposDocumentosPersonal " [value]="item.id" >{{item.descripcion}}</option>
+            </select>
+        </div> 
+        <div class="col-md-8">
+            <label for=""> Ruc/ Dni </label>
+            <br>
+            <select class="form-control comboBox "   formControlName="NroDocPersonal" (change)="changeRucDni($event)"  >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of personalesFiltrada " [value]="item.nroDoc" >{{item.descripcion}}</option>
+            </select>
+        </div>
+    </div>
+ 
+
+    <div class="row">
+        <div class="col-md-3">
+            <label for=""> Banco </label>
+            <br>
+            <select class="form-control comboBox "   formControlName="IdBanco"  (change)="changeBancoMoneda($event)"   >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of bancos " [value]="item.id" >{{item.descripcion}}</option>
+            </select>
+        </div> 
+        <div class="col-md-3">
+            <label for=""> Moneda </label>
+            <br>
+            <select class="form-control comboBox "   formControlName="PubMoneCodigo" (change)="changeBancoMoneda($event)"   >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of monedas " [value]="item.id" >{{item.descripcion}}</option>
+            </select>
+        </div> 
+        <div class="col-md-3">
+            <label for=""> Cuenta  </label>
+            <br>
+            <input type="text" class="form-control " formControlName="CuentaBanco" maxlength="50" placeholder=""  >
+        </div>
+        <div class="col-md-3">
+            <label for=""> CCI  </label>
+            <br>
+            <input type="text" class="form-control " formControlName="CuentaInterbancarioBanco" maxlength="50" placeholder=""  >
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <label for=""> Obs Requerimiento  </label>
+            <br>
+            <input type="text" class="form-control " formControlName="ObsRendicion" maxlength="250" placeholder=""  >
+        </div>
+         <div class="col-md-4 mt-3  text-center">
+            <button class="btn btn-sm btn-success"  (click)="saveUpdateDet()"     tooltip="Guardar"  > <i class="fas fa-save"> </i>    </button>
+            <button class="btn btn-sm btn-warning ml-1" *ngIf="IdTipoTabsGlobal !=4"  (click)="blank_Detalle()"  tooltip ="Nuevo"> <i class="fa fa-plus-circle"> </i> </button>
+        </div>
+    </div>  
+  
+</form>   
+
+<div class="mt-3" *ngIf="IdTipoTabsGlobal == 4 || IdTipoTabsGlobal == 5">
+    <div class=" tableFixHead">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center" *ngIf="IdTipoTabsGlobal != 4 " >ELIMINAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filter: filtrar  ; index as j"   >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td>
+                        <div style="width: 250px;">
+                            {{item.DescripcionDetallada}}
+                        </div>
+                    </td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right" >{{item.CantidadSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right" >{{item.PrecioSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center" *ngIf="IdTipoTabsGlobal != 4 ">
+                        <img src="./assets/img/eliminar.png"   tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+<div class="mt-3" *ngIf="IdTipoTabsGlobal == 6">
+    <div class="d-flex flex-row bd-highlight ">
+        <div class="p-2  mt-1 bd-highlight">
+            <h6>MOVILIDADES Y CAJAS   </h6> 
+        </div>
+        <div class="p-2 bd-highlight">
+            <label for=""> Total : {{totalMovilidad | number:'0.1-5'  }}  </label> 
+        </div>
+    </div>
+
+    <div class=" tableFixHead">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center" >ELIMINAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filterConcepto : 437  ; index as j"   >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td>{{item.DescripcionDetallada}}</td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right">{{item.CantidadSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right">{{item.PrecioSolicitud | number:'0.1-5' }}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center">
+                        <img src="./assets/img/eliminar.png"   tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+
+<div class="mt-3" *ngIf="IdTipoTabsGlobal == 6">
+ 
+    <div class="d-flex flex-row bd-highlight ">
+        <div class="p-2 mt-1 bd-highlight">
+            <h6>PASAJES   </h6> 
+        </div>
+        <div class="p-2 bd-highlight">
+            <label for=""> Total : {{totalPasajes | number:'0.1-5'  }}  </label> 
+        </div>
+    </div>
+    <div class=" tableFixHead">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center" >ELIMINAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filterConcepto : 438  ; index as j"   >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td>{{item.DescripcionDetallada}}</td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right" >{{item.CantidadSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right" >{{item.PrecioSolicitud | number:'0.1-5' }}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center">
+                        <img src="./assets/img/eliminar.png"   tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+<div class="mt-3" *ngIf="IdTipoTabsGlobal == 6">
+ 
+    <div class="d-flex flex-row bd-highlight ">
+        <div class="p-2  mt-1 bd-highlight">
+            <h6> CAJA CHICA   </h6> 
+        </div>
+        <div class="p-2 bd-highlight">
+            <label for=""> Total : {{totalCaja | number:'0.1-5'  }}  </label> 
+        </div>
+    </div>
+
+    <div class=" tableFixHead">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center" >ELIMINAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filterConcepto : 439  ; index as j"   >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td>{{item.DescripcionDetallada}}</td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right" >{{item.CantidadSolicitud | number:'0.1-5' }}</td> 
+                    <td class="text-right" >{{item.PrecioSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center">
+                        <img src="./assets/img/eliminar.png"   tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>

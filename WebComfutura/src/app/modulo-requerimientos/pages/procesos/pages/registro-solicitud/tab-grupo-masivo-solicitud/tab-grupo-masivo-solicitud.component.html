@@ -1,0 +1,388 @@
+
+
+<div class="row" style="background-color: yellow; font-weight: bold;"> 
+    <div class="col-md-4">
+        <div class="mt-2">
+            <label class=" control-label">Total Presupuesto</label>
+            <label class=" control-label ml-2">{{totalGeneralPres}}</label>
+        </div>
+    </div>      
+    <div class="col-md-4">
+        <div class="mt-2">
+            <label class=" control-label">Total Requerimiento</label>
+            <label class=" control-label ml-2">{{totalGeneralReq}}</label>
+        </div>
+    </div>  
+    <div class="col-md-4">
+        <div class="mt-2">
+            <label class=" control-label">Saldo Pendiente</label>
+            <label class=" control-label ml-2">{{saldoGeneralPend}}</label>
+        </div>
+    </div>                      
+</div>     
+
+<hr>
+<form [formGroup]="formParams" >
+
+    <div class="row" *ngIf="IdTipoTabsGlobal == 6" >
+        <div class="col-md-6">
+            <label for=""> Tipo de Concepto</label>
+            <br>
+            <select class="form-control comboBox "   formControlName="IdTipoMovCaja"    >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of tiposConcepto " [value]="item.id" >{{item.descripcion}}</option>
+            </select>
+        </div> 
+    </div> 
+
+    <div class="row">
+        <div class="col-md-12">
+            <label for="" *ngIf="IdTipoTabsGlobal == 4" >  Descripcion Detallada</label>
+            <label for="" *ngIf="IdTipoTabsGlobal == 5 || IdTipoTabsGlobal == 6" >  Concepto de gasto</label>
+            <input type="text" class="form-control "    formControlName="DescripcionDetallada" maxlength="500" placeholder=""  >
+        </div>                           
+    </div>     
+
+    <div class="row">
+        <div class="col-md-3">
+            <label for=""> UM </label>
+            <br>
+            <select class="form-control comboBox "     formControlName="AlmUmedCodigo" >
+                <option value="0"> [ --SELECCIONE-- ]</option> 
+                <option  *ngFor="let item of unidadMedidas " [value]="item.id" >{{item.descripcion}}</option>
+            </select>
+        </div> 
+        <div class="col-md-3">
+            <label for=""> Cantidad </label>
+            <br>
+            <input type="text" class="form-control " (keypress)="keyPress($event)" (input)="changeCantidadPrecio($event)" formControlName="CantidadSolicitud"  placeholder=""  >
+        </div>
+        <div class="col-md-3">
+            <label for=""> Precio </label>
+            <br>
+            <input type="text" class="form-control   "    (keypress)="keyPress($event)" (input)="changeCantidadPrecio($event)" formControlName="PrecioSolicitud"   placeholder=""  >
+        </div>
+        <div class="col-md-3">
+            <label for=""> Costo Total </label>
+            <br>
+            <input type="text" class="form-control disabledForm " formControlName="CostoSolicitud"  placeholder=""  >
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- <div class="col-md-8">
+            <label for=""> Obs Requerimiento  </label>
+            <br>
+            <input type="text" class="form-control " formControlName="ObsRendicion" maxlength="250" placeholder=""  >
+        </div> -->
+         <div class="col-md-12 mt-3  text-center">
+            <button class="btn btn-sm btn-success"  (click)="saveUpdateDet()"     tooltip="Guardar"  > <i class="fas fa-save"> </i>    </button>
+            <button class="btn btn-sm btn-warning ml-1"  (click)="blank_Detalle()" *ngIf=" totalGeneralPres > totalGeneralReq "   tooltip ="Nuevo"> <i class="fa fa-plus-circle"> </i> </button>
+        </div>
+    </div>  
+  
+</form>   
+
+<div   *ngIf="IdTipoTabsGlobal == 5">
+
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-sm btn-info"  (click)="openModalAsignar()"     tooltip="Asignar"  > <i class="fa fa-check"> </i>  Asignar  </button>
+        </div>
+    </div>
+
+    <div class=" tableFixHead mt-1">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>Chk</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR/PERSONAL</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center"  >ANULAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filter: filtrar  ; index as j"  [ngStyle]="{'color': item.Estado == '002' && 'red'}"  >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td scope="row">                                                     
+                        <div class="puntero">
+                            <input type="checkbox" [id]="item.IdSolicitudTabs" style="cursor: pointer;" [(ngModel)]="item.checkeado">
+                            <label [for]="item.IdSolicitudTabs" style="font: weigth 800; margin-left: 1px;" title="Click en marcar para checkear"> </label>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="width: 350px;">
+                            {{item.DescripcionDetallada}}
+                        </div>
+                    </td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right" >{{item.CantidadSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right" >{{item.PrecioSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   *ngIf="item.Estado =='001'"  tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center">
+                        <div  *ngIf="item.Estado =='001'" >
+                            <img src="./assets/img/anular.png"  *ngIf="item.CantidadPresupuesto > 0"  tooltip="Anular" (click)="anularDet(item)"  >
+                        </div>
+                        <img src="./assets/img/eliminar.png"  *ngIf="item.CantidadPresupuesto == 0"  tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+<div class="mt-3" *ngIf="IdTipoTabsGlobal == 6">
+    <div class="d-flex flex-row bd-highlight ">
+        <div class="p-2  mt-1 bd-highlight">
+            <h6>MOVILIDADES Y CAJAS   </h6> 
+        </div>
+        <div class="p-2 bd-highlight">
+            <label for=""> Total : {{totalMovilidad | number:'0.1-5'  }}  </label> 
+        </div>
+    </div>
+
+    <div class=" tableFixHead">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center" >ELIMINAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filterConcepto : 437  ; index as j"   >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td>{{item.DescripcionDetallada}}</td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right">{{item.CantidadSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right">{{item.PrecioSolicitud | number:'0.1-5' }}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center">
+                        <img src="./assets/img/eliminar.png"   tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+
+<div class="mt-3" *ngIf="IdTipoTabsGlobal == 6">
+ 
+    <div class="d-flex flex-row bd-highlight ">
+        <div class="p-2 mt-1 bd-highlight">
+            <h6>PASAJES   </h6> 
+        </div>
+        <div class="p-2 bd-highlight">
+            <label for=""> Total : {{totalPasajes | number:'0.1-5'  }}  </label> 
+        </div>
+    </div>
+    <div class=" tableFixHead">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center" >ELIMINAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filterConcepto : 438  ; index as j"   >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td>{{item.DescripcionDetallada}}</td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right" >{{item.CantidadSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right" >{{item.PrecioSolicitud | number:'0.1-5' }}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center">
+                        <img src="./assets/img/eliminar.png"   tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+<div class="mt-3" *ngIf="IdTipoTabsGlobal == 6">
+ 
+    <div class="d-flex flex-row bd-highlight ">
+        <div class="p-2  mt-1 bd-highlight">
+            <h6> CAJA CHICA   </h6> 
+        </div>
+        <div class="p-2 bd-highlight">
+            <label for=""> Total : {{totalCaja | number:'0.1-5'  }}  </label> 
+        </div>
+    </div>
+
+    <div class=" tableFixHead">
+        <table class="table table-bordered  table-hover table-sm">
+            <thead class="theadTable">
+
+                <tr style="height: 40px !important;">
+                    <th>#</th>
+                    <th>DESCRIPCION</th>
+                    <th>UM</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO</th> 
+                    <th>TOTAL</th> 
+                    <th>PROVEEDOR</th>
+                    <th  class="text-center" >EDITAR</th>
+                    <th  class="text-center" >ELIMINAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of datosTabs |  filterConcepto : 439  ; index as j"   >
+                    <td scope="row"> {{j + 1}} </td>
+                    <td>{{item.DescripcionDetallada}}</td> 
+                    <td>{{item.DescripcionUM}}</td> 
+
+                    <td class="text-right" >{{item.CantidadSolicitud | number:'0.1-5' }}</td> 
+                    <td class="text-right" >{{item.PrecioSolicitud | number:'0.1-5'}}</td> 
+                    <td class="text-right">{{item.CostoSolicitud | number:'0.1-5'}}</td> 
+
+                    <td>{{item.DescripcionPersonal}}</td> 
+                    <td class="text-center">
+                         <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarDet(item)"  >
+                    </td>
+                    <td class="text-center">
+                        <img src="./assets/img/eliminar.png"   tooltip="Eliminar" (click)="eliminarDet(item)"  >
+                    </td>
+                </tr> 
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+
+
+<div class="modal fade " id="modal_personal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeader">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModal"> ASIGNAR RENDICION PERSONAL  </h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">
+ 
+                <div class="mt-1">
+                    <form [formGroup]="formParams" >      
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for=""> Tipo Doc </label>
+                                <br>
+                                <select class="form-control comboBox "   formControlName="IdTipoPersonal" (change)="changeTipoDocPersonal($event)"  >
+                                    <option value="0"> [ --SELECCIONE-- ]</option> 
+                                    <option  *ngFor="let item of tiposDocumentosPersonal " [value]="item.id" >{{item.descripcion}}</option>
+                                </select>
+                            </div> 
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for=""> Ruc/ Dni </label>
+                                <br>
+                                <select class="form-control comboBox "   formControlName="NroDocPersonal" (change)="changeRucDni($event)"  >
+                                    <option value="0"> [ --SELECCIONE-- ]</option> 
+                                    <option  *ngFor="let item of personalesFiltrada " [value]="item.nroDoc" >{{item.descripcion}}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                                <div class="col-md-8">
+                                    <label for=""> Banco </label>
+                                    <br>
+                                    <select class="form-control comboBox "   formControlName="IdBanco"  (change)="changeBancoMoneda($event)"   >
+                                        <option value="0"> [ --SELECCIONE-- ]</option> 
+                                        <option  *ngFor="let item of bancos " [value]="item.id" >{{item.descripcion}}</option>
+                                    </select>
+                                </div> 
+                                <div class="col-md-4">
+                                    <label for=""> Moneda </label>
+                                    <br>
+                                    <select class="form-control comboBox "   formControlName="PubMoneCodigo" (change)="changeBancoMoneda($event)"   >
+                                        <option value="0"> [ --SELECCIONE-- ]</option> 
+                                        <option  *ngFor="let item of monedas " [value]="item.id" >{{item.descripcion}}</option>
+                                    </select>
+                                </div> 
+                        </div> 
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for=""> Cuenta  </label>
+                                <br>
+                                <input type="text" class="form-control " formControlName="CuentaBanco" maxlength="50" placeholder=""  >
+                            </div>
+                            <div class="col-md-6">
+                                <label for=""> CCI  </label>
+                                <br>
+                                <input type="text" class="form-control " formControlName="CuentaInterbancarioBanco" maxlength="50" placeholder=""  >
+                            </div>
+                    </div> 
+                    </form>
+                </div>
+
+                <div class="row mt-2" >
+                    <div class="col-md-12 text-center">
+                        <button class="btn btn-success" (click)="asignarPersonalMasivo()"   title="Agregar personal"> <i class="fas fa-save"> </i>  ASIGNAR PERSONAL </button>
+                    </div>
+                </div>  
+
+
+            </div>
+            <div class="modal-footer">
+ 
+            </div>
+        </div>
+    </div>
+</div>  

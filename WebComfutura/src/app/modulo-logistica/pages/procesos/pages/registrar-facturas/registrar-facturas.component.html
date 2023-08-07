@@ -1,0 +1,796 @@
+
+<div class="card border-left-warning  shadow  ">
+    <div class="card-header">
+        <h6 class="headerTitle"> LISTADO DE FACTURAS </h6>
+    </div>
+    <div class="card-body">
+        <form [formGroup]="formParamsFiltro">
+            <div class="row" style="margin-top: -10px;">
+                <div class="col-md-4">
+                    <label for="">  Cliente </label>
+                    <select class="form-control comboBox" formControlName="cliente"  >
+                        <option value="0"> [ --SELECCIONE-- ]</option>
+                        <option  *ngFor="let item of clientes " [value]="item.codigo" >{{item.descripcion}}</option>
+                    </select>
+                </div>                     
+                <div class="col-md-4">
+                    <label class=" control-label">Nro Orden Compra</label>
+                    <input type="text" class="form-control "  formControlName="nroOC"   maxlength="250" placeholder=""  >
+                </div>  
+                <div class="col-md-4">
+                    <label class="control-label"> Rango Fechas </label>
+                    <div class="input-group">
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_ini"  [bsConfig]="datepiekerConfig">
+                        <span class="input-group-addon">-</span>
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_fin" [bsConfig]="datepiekerConfig">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row"  >
+
+                <div class=" col-sm-6 col-md-4">
+                    <label for=""> Estados</label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="estado" >
+                        <option value="0"> [ --TODOS-- ]</option>
+                        <option  *ngFor="let item of estados" [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div> 
+                <div class=" col-sm-6 col-md-4">
+                    <div class="custom-control custom-checkbox custom-control-inline mt-4 ">
+                        <input type="checkbox" id="203" value="SI" formControlName="detraccionPendiente"  class="custom-control-input" >
+                        <label class="custom-control-label" for="203">Detracciones Pendientes</label>
+                      </div>
+                </div>
+
+                <div class="col-md-4 text-center">
+                    <br>
+                    <div class="text-center">
+                        <button class="btn btn-primary " (click)="mostrarInformacion()" style="font-size: 13px;">  <i class="fas fa-search"> </i> Mostrar </button>
+                        <button class="btn btn-warning ml-2 " (click)="nuevo()" style="font-size: 13px;">  <i class="fa fa-plus-circle"> </i> Nuevo</button>  
+                        <button class="btn btn-info ml-2"  style="font-size: 13px;" (click)="descargarGrilla()"  >  <i class="fas fa-file-download"></i> Exportar </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="d-flex justify-content-between" style=" margin-top: -15px;">
+            <div class="p-1 bd-highlight">
+     
+            </div>
+            <div class="p-2 bd-highlight" style="width: 50%;">
+                <input type="text" class="form-control form-control-sm resaltarTexto" placeholder="Buscar" maxlength="50" [(ngModel)]="filtrarMantenimiento">
+            </div>
+            <div class="p-2 bd-highlight"> </div>
+        </div>
+
+        <div class=" tableFixHead">
+            <table class="table  table-hover table-sm">
+                <thead class="theadTable">
+
+                    <tr style="height: 40px !important;">
+                        <th>#</th>
+                        <th>ESTADO </th>
+                        <th>TIPO DOC</th>
+                        <th>NRO DOC</th>
+ 
+                        <th>FECHA EMISION </th>
+                        <th>CLIENTE </th>
+                        <th> MON</th>
+                        
+                        <th>BASE IMPONIBLE  </th>
+                        <th>IMP. TOTAL</th>
+                        <th>IMP. NETO</th>          
+                        <th colspan="2" class="text-center" >FACTORING</th> 
+                        <th  class="text-center" >FACTURACION</th> 
+                        <th  class="text-center" >COBRANZA</th> 
+                        <th>IMPORTE COBRADO </th>
+                        <th>SALDO POR COBRAR </th>
+                        <th colspan="2">DETRACCION </th>
+   
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of registroFacturasCab |  filter: filtrarMantenimiento  ; index as j" [ngStyle]="{'color': item.Estado == '122' && 'red'}" >
+                        <td scope="row"> {{j + 1}} </td>
+                        <td>{{item.DescripcionEstado}}</td> 
+                        <td>{{item.DescripcionTipoDoc}}</td> 
+                        <td>{{item.NroDocumento}}</td> 
+
+                        <td>{{item.FechaEmsion}}</td> 
+                        <td>
+                            <div style="width: 300px;">
+                                {{item.DescripcionCliente}}
+                            </div>
+                        </td> 
+                        <td>{{item.DescripcionMoneda}}</td> 
+
+                        <td class="text-right" >{{item.BaseImponible | number:'0.1-5'}}</td> 
+                        <td class="text-right" >{{item.ImporteTotal | number:'0.1-5'}}</td> 
+                        <td class="text-right" >{{item.ImporteNeto | number:'0.1-5'}}</td>      
+                        
+                        <td class="text-right" >
+                           <div *ngIf="item.FactoringFlag == 0 ">
+                                 <span class="badge badge-pill badge-dark">NO</span>
+                           </div> 
+                           <div *ngIf="item.FactoringFlag != 0 ">
+                                <span class="badge badge-pill badge-primary">SI</span>
+                           </div> 
+                        </td> 
+
+                        <td class="text-left" >
+                            <img src="./assets/img/factoring.png"    tooltip="Registrar" (click)="verFactoring(item)"  >
+                         </td> 
+ 
+                        <td class="text-center">
+                            <img src="./assets/img/editar.png"   tooltip="Editar Doc" (click)="editar(item)"  >
+                            <img class="ml-1" src="./assets/img/anular.png" *ngIf="item.Estado == 120" tooltip="Anular Doc" (click)="anular(item)"  >
+                        </td>
+                        <td class="text-center">
+                            <img src="./assets/img/ver.png"   tooltip="Cobranza" (click)="verCobranza(item)"  >
+                        </td>
+                        <td class="text-right" >{{item.TotalCobrado | number:'0.1-5' }}</td> 
+                        <td class="text-right" >{{item.SaldoCobrar | number:'0.1-5' }}</td> 
+                        <td class="text-right" >                        
+                            <div *ngIf="item.DetraccionFlag == 0 ">
+                                <span class="badge badge-pill badge-dark">NO</span>
+                          </div> 
+                          <div *ngIf="item.DetraccionFlag != 0 ">
+                               <span class="badge badge-pill badge-primary">SI</span>
+                          </div>  
+                        </td> 
+                        <td class="text-left" > 
+                          <img src="./assets/img/detraccion.png"   tooltip="Registrar" (click)="verDetraccion(item)"  >
+                        </td> 
+                    </tr> 
+                </tbody>
+            </table>
+        </div>  
+
+    </div>
+</div>
+
+
+ 
+<div class="modal fade " id="modal_proceso" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog  modal-xl " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeader">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModal"> {{tituloModalProceso}}   </h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">   
+
+
+                <tabset #staticTabsPrincipal style="font-family: 'Montserrat', sans-serif; color:black im !important " >
+                    <tab heading="DATOS GENERALES" (selectTab)="selectTab($event)" *ngIf="tipoTab == 0">    
+                        <div class="card" style="border: 1px solid #dcdfe2;">
+                            <div class="card-body"> 
+                                <form [formGroup]="formParams" >
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class=" control-label">ID</label>
+                                            <input type="text" class="form-control disabledForm"  formControlName="IdTelefoniaDocumentos"  placeholder=""  >
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="">  Tipo Documento </label>
+                                            <select class="form-control comboBox" formControlName="IdTipoDocumento" [ngClass]="{'disabledForm':IdDocumento_Global == 0? false :true}"   >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of tiposDocumentos " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>        
+                                    </div>     
+                                                                            
+                                    <div class="row">  
+                                        <div class="col-md-3">
+                                            <label class=" control-label">Nro Documento</label>
+                                            <input type="text" class="form-control "  formControlName="NroDocumento"  [ngClass]="{'disabledForm':IdDocumento_Global == 0? false :true}"   maxlength="20" placeholder=""  >
+                                        </div>          
+                                        <div class="col-md-3">
+                                            <label class=" control-label">Fecha Emision</label>
+                                            <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="FechaEmsion"  [bsConfig]="datepiekerConfig">
+                                        </div>  
+                                        <div class="col-md-3">
+                                            <label for="">  Moneda </label>
+                                            <select class="form-control comboBox" formControlName="PubMoneCodigo"  >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of monedas " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>   
+                                        <div class="col-md-3">
+                                            <label class=" control-label">% Igv</label>
+                                            <input type="text" class="form-control text-right inputNumber resaltarTextoNumerico"  formControlName="PorIgv" (input)="calcularTotales()"   (keypress)="keyPress($event)" maxlength="250" placeholder=""  >
+                                        </div>                   
+                                    </div>        
+                                    
+                                    <div class="row" >                          
+                                        <div class="col-md-3">
+                                            <label class=" control-label">Solicitud PAP</label>
+                                            <input type="text" class="form-control "  formControlName="SolicitudPap"   maxlength="250" placeholder=""  >
+                                        </div>   
+                                          
+                                        <div class="col-md-3">
+                                            <label class=" control-label">Nro Orden Compra</label>
+                                            <input type="text" class="form-control resaltarTexto"     placement="bottom" formControlName="NroOrdenCompra" (keyup.enter)="buscarOrdenCompra()"    maxlength="30" placeholder=""  >
+                                        </div> 
+                                        <div class="col-md-3">
+                                            <label class=" control-label">Posicion</label>
+                                            <input type="text" class="form-control resaltarTexto "   formControlName="Posicion"  (keyup.enter)="buscarOrdenCompra()" maxlength="250" placeholder=""  >
+                                        </div>   
+                                          
+                                        <div class="col-md-3">
+                                            <label class=" control-label">OT</label>
+                                            <input type="text" class="form-control resaltarTexto "  formControlName="Ot"  (keyup.enter)="buscarOt()"   maxlength="10" placeholder=""  >
+                                        </div>   
+                                    </div>  
+                
+                                    <div class="row">
+                 
+                                        <div class="col-md-4">
+                                            <label for="">  Cliente </label>
+                                            <select class="form-control comboBox" formControlName="PubCcteRucCliente"  >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of clientes " [value]="item.codigo" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>          
+                                        <div class="col-md-4">
+                                            <label for="">  Area </label>
+                                            <select class="form-control comboBox" formControlName="Proyecto"  >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of areas " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>    
+                                    </div> 
+                
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class=" control-label">Concepto</label>
+                                            <input type="text" class="form-control "  formControlName="Glosa"  maxlength="250" placeholder=""  >
+                                        </div>       
+                                    </div> 
+                
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class=" control-label">Base imponible</label>
+                                            <input type="text" class="form-control text-right inputNumber resaltarTextoNumerico" (keypress)="keyPress($event)" (input)="calcularTotales()" formControlName="BaseImponible"  maxlength="150" placeholder=""  >
+                                        </div>  
+                                        <div class="col-md-4">
+                                            <label class=" control-label">Importe Total</label>
+                                            <input type="text" class="form-control text-right inputNumber" (keypress)="keyPress($event)" formControlName="ImporteTotal"  maxlength="150" placeholder=""  >
+                                        </div> 
+                                        <div class="col-md-4">
+                                            <label class=" control-label">Tasa Detracc / Percepcion</label>
+                                            <input type="text" class="form-control text-right inputNumber resaltarTextoNumerico"  (input)="calcularTotales()"  (keypress)="keyPress($event)" formControlName="TasaDetraccion"  maxlength="150" placeholder=""  >
+                                        </div>     
+                                    </div> 
+                
+                                    <div class="row">
+                                        <div class="col-md-4">
+                 
+                                        </div>  
+                                        <div class="col-md-4">
+                                            <label class=" control-label">Imp. Impuesto</label>
+                                            <input type="text" class="form-control text-right inputNumber" (keypress)="keyPress($event)"  formControlName="TotalImpuesto"  maxlength="150" placeholder=""  >
+                                        </div> 
+                                        <div class="col-md-4">
+                                            <label class=" control-label">Importe Neto</label>
+                                            <input type="text" class="form-control text-right inputNumber" (keypress)="keyPress($event)" formControlName="ImporteNeto"  maxlength="150" placeholder=""  >
+                                        </div>     
+                                    </div> 
+                
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label > Estados</label>
+                                            <br>
+                                            <select class="form-control comboBox " formControlName="Estado" >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of estados" [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>  
+                                        <div class="col-md-4 text-center">
+                                            <div class="mt-3">
+                                                <button class="btn btn-success"  *ngIf="flag_verEstado_Global"  (click)="saveUpdate()" title="Guardar la informacion"> <i class="fas fa-save"> Grabar</i></button>
+                
+                                            </div>
+                                        </div>     
+                                    </div>                 
+                                </form>      
+                            </div>
+                        </div>    
+                    </tab>
+                    <tab heading="LISTA DE COBRANZAS" (selectTab)="selectTab($event)" *ngIf="tipoTab == 1" >
+                        <div class="card" style="border: 1px solid #dcdfe2;">
+                            <div   class="card-body ">
+
+                                <form [formGroup]="formParams" >
+                                    <div class="p-3" style=" background-color: lightgoldenrodyellow;">                   
+                                        <div class="row">
+                                            <div class=" col-sm-6 col-md-3">
+                                                <label for="">  Tipo Documento </label>
+                                                <select class="form-control comboBox disabledForm" formControlName="IdTipoDocumento"     >
+                                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                                    <option  *ngFor="let item of tiposDocumentos " [value]="item.id" >{{item.descripcion}}</option>
+                                                </select>
+                                            </div>                          
+                                            <div class="col-sm-6 col-md-3">
+                                                <label class=" control-label">Nro Documento</label>
+                                                <input type="text" class="form-control disabledForm"  formControlName="NroDocumento"     maxlength="20" placeholder=""  >
+                                            </div>         
+                                            <div class="col-sm-6 col-md-3">
+                                                <label for="">  Moneda </label>
+                                                <select class="form-control comboBox disabledForm" formControlName="PubMoneCodigo"   >
+                                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                                    <option  *ngFor="let item of monedas " [value]="item.id" >{{item.descripcion}}</option>
+                                                </select>
+                                            </div>   
+                                            <div class="col-sm-6 col-md-3">
+                                                <label class=" control-label">Importe Neto</label>
+                                                <input type="text" class="form-control text-right inputNumber" style=" font-weight: bold; "  readonly (keypress)="keyPress($event)" formControlName="ImporteNeto"  maxlength="150" placeholder=""  >
+                                            </div> 
+
+                                        </div>
+                                           
+                                    </div> 
+                                </form> 
+                                
+                                <div class="row" *ngIf="formParams.value.saldoCobrar>0">
+                                    <div class="col-md-12">
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-warning ml-2 " (click)="nuevaCobranza()" style="font-size: 13px;">  <i class="fa fa-plus-circle"> </i> Nueva</button>  
+                                        </div>
+                                    </div>
+                                </div>
+                         
+
+                                <div class=" tableFixHead table-responsive mt-3" *ngIf="cobranzasCab.length > 0" >
+                                    <table class="table table-hover table-sm">
+                                        <thead class="theadTable">
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Estado</th>
+                                            <th scope="col">Tipo Cobro</th>
+                                            <th scope="col">Nro Operacion</th>
+                                            <th scope="col">Fecha Cobranza</th>                     
+                                            <th scope="col">Imp. Cobrado</th>    
+                                            <th scope="col">Acciones</th>
+                
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let item of  cobranzasCab; index as i">
+                                            <th scope="row"> {{i + 1}} </th>
+                                            <td>{{item.DescripcionEstado}}</td>
+                                            <td>{{item.DescripcionTipoCobro}}</td>
+                                            <td>{{item.NroOperacion}}</td>
+                                            <td>{{item.FechaCobro |date:"dd/MM/yyyy" }}</td>
+                                            <td class="text-right" >{{item.ImporteCobrado | number:'0.1-5' }}</td>
+                                            <td class="text-center">
+                                                <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editarCobranza(item)"  > 
+                                                <img src="./assets/img/eliminar.png"  class="ml-2"  tooltip="Eliminar" (click)="eliminarArchivoSeleccionado(item)"  >
+                                                <img src="./assets/img/descargar.png" class="ml-2"  *ngIf="item.NombreArchivoServidor"  tooltip="Descargar" (click)="descargarArchivoSeleccionado(item)"  >
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                 </div>
+
+                            </div>
+                        </div>
+                    </tab> 
+                </tabset>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+
+<div class="modal fade " id="modal_cobranza" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog  modal-lg " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeaderItem">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" style="color: white;" title="Retornar" (click)="cerrarModalCobranza()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModalItem"> REGISTRO DE COBRANZA</h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" style="color: white;"  (click)="cerrarModalCobranza()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">   
+                <form [formGroup]="formParams" >
+                    <div class="p-3" style=" background-color: lightgoldenrodyellow;">                   
+                        <div class="row">
+                            <div class="col-sm-4 col-md-4">
+                                <label for="">  Tipo Documento </label>
+                                <select class="form-control comboBox disabledForm" formControlName="IdTipoDocumento"     >
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option  *ngFor="let item of tiposDocumentos " [value]="item.id" >{{item.descripcion}}</option>
+                                </select>
+                            </div>                          
+                            <div class="col-sm-4 col-md-4">
+                                <label class=" control-label">Nro Documento</label>
+                                <input type="text" class="form-control disabledForm"  formControlName="NroDocumento"     maxlength="20" placeholder=""  >
+                            </div>         
+                            <div class="col-sm-4 col-md-4">
+                                <label for="">  Moneda </label>
+                                <select class="form-control comboBox disabledForm" formControlName="PubMoneCodigo"   >
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option  *ngFor="let item of monedas " [value]="item.id" >{{item.descripcion}}</option>
+                                </select>
+                            </div>   
+ 
+                        </div>   
+
+                        
+                        <div class="row">
+                            <div class="col-sm-6 col-md-3">                                              
+                              
+                            </div> 
+                            <div class="col-sm-6 col-md-3">                                                
+                                
+                            </div> 
+                            <div class="col-sm-6 col-md-3">
+                                <label class=" control-label">Importe Neto</label>
+                                <input type="text" class="form-control text-right inputNumber " style=" font-weight: bold; " readonly (keypress)="keyPress($event)" formControlName="ImporteNeto"  maxlength="150" placeholder=""  >
+                            </div> 
+                            <div class="col-sm-6 col-md-3">
+                                <label class=" control-label">Saldo por Cobrar</label>
+                                <input type="text" class="form-control text-right inputNumber " style=" font-weight: bold; "  readonly (keypress)="keyPress($event)" formControlName="saldoCobrar"  maxlength="150" placeholder=""  >
+                            </div> 
+                        </div>
+                    </div> 
+                </form> 
+                <hr>  
+
+                <form [formGroup]="formParamsFile">
+                    <div class="row">
+                        <div class=" col-sm-6 col-md-4">
+                            <label  > Tipo Cobro </label>
+                            <br>
+                            <select class="form-control comboBox "   formControlName="IdTipoCobro"   >
+                                <option value="0"> [ --SELECCIONE-- ]</option> 
+                                <option  *ngFor="let item of tiposCobro " [value]="item.id" >{{item.descripcion}}</option>
+                            </select>
+                        </div>
+                        <div class=" col-sm-6 col-md-3">
+                            <label class=" control-label">Fecha Cobro</label>
+                            <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="FechaCobro"  [bsConfig]="datepiekerConfig">
+                        </div>
+                        <div class="col-sm-6 col-md-5">
+                            <label class=" control-label">Nro Operacion</label>
+                            <input type="text" class="form-control  "  formControlName="NroOperacion"  maxlength="20" placeholder=""  >
+                        </div>
+                     </div>
+                    <div class="row">
+                        <div class="col-sm-6  col-md-9">
+                            <label  > Banco </label>
+                            <br>
+                            <select class="form-control comboBox "   formControlName="IdBanco"   >
+                                <option value="0"> [ --SELECCIONE-- ]</option> 
+                                <option  *ngFor="let item of bancos " [value]="item.id" >{{item.descripcion}}</option>
+                            </select>
+                        </div> 
+                        <div class="col-sm-6  col-md-3">
+                            <label class=" control-label">Importe Cobrar</label>
+                            <input type="text" class="form-control text-right inputNumber resaltarTextoNumerico"   (keypress)="keyPress($event)" formControlName="ImporteCobrado"  maxlength="150" placeholder=""  >
+                        </div> 
+
+                    </div>
+                        
+                    <div class="row mt-3">
+                        <div class="col-md-8">
+                            <div class="botonFile">
+                                <input type="file" class="form-control-file btn" id="fileInput"  accept="image/png, image/gif, image/jpeg" formControlName="file"   (change)="onFileChange($event)" />
+                            </div>                        
+                        </div>
+                        <div class="col-md-4 pt-1 text-center">
+                            <button class="btn  btn-block btn-success" (click)="saveUpdateCobranzas()"> <i class="fas fa-save">  </i> Registrar </button>
+                            <!-- <button class="btn btn-sm btn-warning ml-2 " (click)="blank()"> <i class="fa fa-plus-circle">  </i> Nuevo </button> -->
+                        </div>
+                    </div>
+                </form>
+                
+       
+
+                <div class=" tableFixHead table-responsive mt-3" *ngIf="voucher.length > 0">
+                    <table class="table table-hover table-sm">
+                        <thead class="theadTableModal">
+                        <tr>
+                            <th scope="col">#</th>     
+                            <th scope="col">Nombre Archivo</th>
+                            <th scope="col">Fecha Registro</th>                     
+                            <th class="text-center" >Descargar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let item of  voucher; index as i">
+                            <th scope="row"> {{i + 1}} </th>
+                            <td>{{item.nombreArchivo}}</td>
+                            <td>{{item.fechaRegistro |date:"dd/MM/yyyy" }}</td>     
+                            <td class="text-center">
+                                <img src="./assets/img/descargar.png"   tooltip="descargar" (click)="descargarArchivoSeleccionado(item)"  >
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                 </div>
+
+
+
+            </div>
+            <div class="modalFooterItem text-right p-2">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalCobranza()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+
+<div class="modal fade " id="modal_detraccion" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog  modal-lg " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeaderItem">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" style="color: white;" title="Retornar" (click)="cerrarModalDetraccion()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModalItem"> REGISTRO DE DETRACCION</h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" style="color: white;"  (click)="cerrarModalDetraccion()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body"   >   
+
+                <div [ngClass]="{'disabledForm':DetraccionFlag_global == 2? true :false}">                
+                        <form [formGroup]="formParams" >
+                            <div class="p-3" style=" background-color: lightgoldenrodyellow;">                   
+                                <div class="row">
+                                    <div class="col-sm-8 col-md-8">
+                                        <label for="">  Cliente </label>
+                                        <select class="form-control comboBox disabledForm" formControlName="PubCcteRucCliente"  >
+                                            <option value="0"> [ --SELECCIONE-- ]</option>
+                                            <option  *ngFor="let item of clientes " [value]="item.codigo" >{{item.descripcion}}</option>
+                                        </select>
+                                    </div> 
+
+                                    <div class="col-sm-4 col-md-4">
+                                        <label for="">  Tipo Documento </label>
+                                        <select class="form-control comboBox disabledForm" formControlName="IdTipoDocumento"     >
+                                            <option value="0"> [ --SELECCIONE-- ]</option>
+                                            <option  *ngFor="let item of tiposDocumentos " [value]="item.id" >{{item.descripcion}}</option>
+                                        </select>
+                                    </div>                        
+                                </div>
+            
+                                <div class="row">
+                                    <div class="col-sm-6 col-md-3">  
+                                        <label class=" control-label">Nro Documento</label>
+                                        <input type="text" class="form-control disabledForm"  formControlName="NroDocumento"     maxlength="20" placeholder=""  >
+                                    </div>   
+                                    <div class="col-sm-6 col-md-3">                                              
+                                        <label for="">  Moneda </label>
+                                        <select class="form-control comboBox disabledForm" formControlName="PubMoneCodigo"   >
+                                            <option value="0"> [ --SELECCIONE-- ]</option>
+                                            <option  *ngFor="let item of monedas " [value]="item.id" >{{item.descripcion}}</option>
+                                        </select>
+                                    </div> 
+                                    <div class="col-sm-6 col-md-3">                                                
+                                        <label class=" control-label">Tasa %</label>
+                                        <input type="text" class="form-control text-right inputNumber" style=" font-weight: bold; " readonly (keypress)="keyPress($event)" formControlName="TasaDetraccion"  maxlength="150" placeholder=""  >
+                                    </div> 
+                                    <div class="col-sm-6 col-md-3">
+                                        <label class=" control-label">Importe Neto</label>
+                                        <input type="text" class="form-control text-right inputNumber"  style=" font-weight: bold" readonly (keypress)="keyPress($event)" formControlName="ImporteNeto"  maxlength="150" placeholder=""  >
+                                    </div> 
+        
+                                </div>
+                            </div> 
+                        </form> 
+                        <hr>  
+
+                        <form [formGroup]="formParams">
+                            <div class="row"> 
+                                <div class=" col-sm-6 col-md-3">
+                                    <label class=" control-label">Fecha Pago</label>
+                                    <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="FechaPagoDetraccion"  [bsConfig]="datepiekerConfig">
+                                </div>
+                                <div class="col-sm-6 col-md-6">
+                                    <label class=" control-label">Nro Operacion</label>
+                                    <input type="text" class="form-control  "  formControlName="NroOperacionDetraccion"  maxlength="20" placeholder=""  >
+                                </div>
+                                <div class="col-sm-6  col-md-3">
+                                    <label class=" control-label">Imp Impuesto</label>
+                                    <input type="text" class="form-control text-right inputNumber resaltarTextoNumerico"   (keypress)="keyPress($event)" formControlName="ImporteDetraccion"   placeholder=""  >
+                                </div> 
+                            </div>                        
+                            <div class="row mt-3">
+                                <div class="col-md-8">
+                                    <div class="botonFile">
+                                        <input type="file" class="form-control-file btn" id="fileInput"  accept="image/png, image/gif, image/jpeg" formControlName="file"   (change)="onFileChange($event)" />
+                                    </div>                        
+                                </div>
+                                <div class="col-md-4 pt-1 text-center">
+                                    <button class="btn  btn-sm btn-success" (click)="saveUpdateDetracciones()"  tooltip="Registrar detraccion"  > <i class="fas fa-save">  </i> Registrar </button>
+                                    <button class="btn  btn-sm btn-danger ml-1" *ngIf="DetraccionFlag_global > 0"  (click)="cerrarDetraccion()" tooltip="Cerrar detraccion"  > <i class="fas fa-file-alt"></i> Cerrar </button>
+                                </div>
+                            </div>
+                        </form>
+                </div>
+        
+
+                <div class=" tableFixHead table-responsive mt-3" *ngIf="voucher.length > 0">
+                    <table class="table table-hover table-sm">
+                        <thead class="theadTableModal">
+                        <tr>
+                            <th scope="col">#</th>     
+                            <th scope="col">Nombre Archivo</th>
+                            <th scope="col">Fecha Registro</th>                     
+                            <th class="text-center" >Descargar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let item of  voucher; index as i">
+                            <th scope="row"> {{i + 1}} </th>
+                            <td>{{item.nombreArchivo}}</td>
+                            <td>{{item.fechaRegistro |date:"dd/MM/yyyy" }}</td>     
+                            <td class="text-center">
+                                <img src="./assets/img/descargar.png"   tooltip="descargar" (click)="descargarArchivoSeleccionado(item)"  >
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                 </div>
+
+
+
+            </div>
+            <div class="modalFooterItem text-right p-2">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalDetraccion()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+
+
+
+<div class="modal fade " id="modal_factoring" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog  modal-lg " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeaderItem">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" style="color: white;" title="Retornar" (click)="cerrarModalFactoring()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModalItem"> REGISTRO DE FACTORING </h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" style="color: white;"  (click)="cerrarModalFactoring()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body"   >   
+
+                <div [ngClass]="{'disabledForm':FactoringFlag_global == 2? true :false}">                
+                        <form [formGroup]="formParams" >
+                            <div class="p-3" style=" background-color: lightgoldenrodyellow;">                   
+                                <div class="row">
+                                    <div class="col-sm-8 col-md-8">
+                                        <label for="">  Cliente </label>
+                                        <select class="form-control comboBox disabledForm" formControlName="PubCcteRucCliente"  >
+                                            <option value="0"> [ --SELECCIONE-- ]</option>
+                                            <option  *ngFor="let item of clientes " [value]="item.codigo" >{{item.descripcion}}</option>
+                                        </select>
+                                    </div> 
+
+                                    <div class="col-sm-4 col-md-4">
+                                        <label for="">  Tipo Documento </label>
+                                        <select class="form-control comboBox disabledForm" formControlName="IdTipoDocumento"     >
+                                            <option value="0"> [ --SELECCIONE-- ]</option>
+                                            <option  *ngFor="let item of tiposDocumentos " [value]="item.id" >{{item.descripcion}}</option>
+                                        </select>
+                                    </div>                        
+                                </div>
+            
+                                <div class="row">
+                                    <div class="col-sm-4 col-md-3">  
+                                        <label class=" control-label">Nro Documento</label>
+                                        <input type="text" class="form-control disabledForm"  formControlName="NroDocumento"     maxlength="20" placeholder=""  >
+                                    </div>   
+                                    <div class="col-sm-4 col-md-3">                                             
+                                        <label for="">  Moneda </label>
+                                        <select class="form-control comboBox disabledForm" formControlName="PubMoneCodigo"   >
+                                            <option value="0"> [ --SELECCIONE-- ]</option>
+                                            <option  *ngFor="let item of monedas " [value]="item.id" >{{item.descripcion}}</option>
+                                        </select>
+                                    </div> 
+                                    <div class="col-sm-4 col-md-3">  
+                                        <label class=" control-label">Importe Neto</label>
+                                        <input type="text" class="form-control text-right inputNumber"  style=" font-weight: bold" readonly (keypress)="keyPress($event)" formControlName="ImporteNeto"  maxlength="150" placeholder=""  >
+                                    </div> 
+        
+                                </div>
+                            </div> 
+                        </form> 
+                        <hr>  
+
+                        <form [formGroup]="formParams">
+
+                            <div class="row"> 
+                                <div class=" col-sm-12 col-md-6">
+                                    <label for="">  Proveedor </label>
+                                    <select class="form-control comboBox " formControlName="PubCCteRuCFactoring"   >
+                                        <option value="0"> [ --SELECCIONE-- ]</option>
+                                        <option  *ngFor="let item of proveedorFactoring " [value]="item.id" >{{item.descripcion}}</option>
+                                    </select>
+                                </div> 
+                                <div class="col-sm-6 col-md-3">                                                
+                                    <label class=" control-label">  % Interes </label>
+                                    <input type="text" class="form-control text-right inputNumber resaltarTextoNumerico" style=" font-weight: bold; " (input)="calcularTotalesFactoring()"    (keypress)="keyPress($event)" formControlName="PorComisionFactoring"  maxlength="150" placeholder=""  >
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <label class=" control-label">Total Interes</label>
+                                    <input type="text" class="form-control text-right inputNumber"  style=" font-weight: bold" readonly (keypress)="keyPress($event)" formControlName="totalInteresesFactoring"  maxlength="150" placeholder=""  >
+                                </div> 
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <div class="p-2 bd-highlight">
+                                    <label class=" control-label">Importe Adelantado 95 %</label>
+                                    <input type="text" class="form-control text-right inputNumber resaltarTextoNumerico"  (input)="calcularTotalesFactoring()"  (keypress)="keyPress($event)" formControlName="ImporteFactoring"   placeholder=""  >
+                                </div>
+                                <div class="p-2 bd-highlight">
+                                    <label class=" control-label">Saldo Cobrar</label>
+                                    <input type="text" class="form-control text-right inputNumber"  style=" font-weight: bold" readonly (keypress)="keyPress($event)" formControlName="saldoCobrar"  maxlength="150" placeholder=""  >
+                                </div>
+                                <div class="p-2 bd-highlight">
+                                    <label class=" control-label">Fecha Registro</label>
+                                    <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="FechaRegistroFactoring"  [bsConfig]="datepiekerConfig">
+                                </div>
+                            </div>
+                                                  
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                   <button class="btn  btn-sm btn-success" (click)="saveUpdateFactoring()"  tooltip="Registrar factoring"  > <i class="fas fa-save">  </i> Registrar </button>
+                                   <button class="btn  btn-sm btn-danger ml-1" *ngIf="FactoringFlag_global > 0"  (click)="cerrarFactoring()" tooltip="Cerrar factoring"  > <i class="fas fa-file-alt"></i> Cerrar </button>
+                               </div>
+                           </div>
+                        </form>
+                </div>
+
+            </div>
+            <div class="modalFooterItem text-right p-2">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalFactoring()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+ 

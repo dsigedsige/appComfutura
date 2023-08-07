@@ -1,0 +1,372 @@
+
+<div class="card border-left-warning  shadow  ">
+    <div class="card-header">
+        <h6 class="headerTitle"> LISTA DE OT </h6>
+    </div>
+    <div class="card-body">
+        <form [formGroup]="formParamsFiltro">
+            <div class="row" style="margin-top: -10px;">
+                <div class="col-md-4">
+                    <label for="">  Region </label>
+                     <select class="form-control comboBox" formControlName="departamento" (change)="changeDepartamento($event)" >
+                        <option value="0"> [ --SELECCIONE-- ]</option>
+                        <option  *ngFor="let item of departamentos " [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for=""> Provincia </label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="provincia"  (change)="changeProvincia($event)"  >
+                        <option value="0"> [ --SELECCIONE-- ]</option>
+                        <option  *ngFor="let item of provincias " [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div> 
+                <div class="col-md-4">
+                    <label for=""> Distrito </label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="distrito" >
+                        <option value="0"> [ --TODOS-- ]</option>
+                        <option  *ngFor="let item of distritos " [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div> 
+            </div>
+
+            <div class="row"  >
+                <div class="col-md-4">
+                    <label class="control-label"> Rango Fechas </label>
+                    <div class="input-group">
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_ini"  [bsConfig]="datepiekerConfig">
+                        <span class="input-group-addon">-</span>
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_fin" [bsConfig]="datepiekerConfig">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for=""> Estados</label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="estado" >
+                        <option value="0"> [ --TODOS-- ]</option>
+                        <option  *ngFor="let item of estados" [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div> 
+                <div class="col-md-4 text-center">
+                    <br>
+                    <div class="text-center">
+                        <button class="btn btn-primary " (click)="mostrarInformacion()" style="font-size: 13px;">  <i class="fas fa-search"> </i> Mostrar </button>
+                        <button class="btn btn-warning ml-2 " (click)="nuevo()" style="font-size: 13px;">  <i class="fa fa-plus-circle"> </i> Nuevo</button>  
+                        <button class="btn btn-info ml-2"  style="font-size: 13px;" (click)="descargarGrilla()"  >  <i class="fas fa-file-download"></i> Exportar </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="d-flex justify-content-between" style=" margin-top: -15px;">
+            <div class="p-1 bd-highlight">
+     
+            </div>
+            <div class="p-2 bd-highlight" style="width: 50%;">
+                <input type="text" class="form-control form-control-sm resaltarTexto" placeholder="Buscar" maxlength="50" [(ngModel)]="filtrarMantenimiento">
+            </div>
+            <div class="p-2 bd-highlight"> </div>
+        </div>
+
+        <div class=" tableFixHead">
+            <table class="table  table-hover table-sm">
+                <thead class="theadTable">
+
+                    <tr style="height: 40px !important;">
+                        <th>#</th>
+                        <th>ESTADO </th>
+                        <th>OT</th>
+                        <th>NOMBRE OT </th>
+ 
+                        <th>PROYECTO </th>
+                        <th>NOMBRE SITE </th>
+                        <th> ID</th>
+                        
+                        <th>REGION  </th>
+                        <th>FECHA APERTURA</th>
+                        <th>CLIENTE</th>
+         
+                        <th  class="text-center" >Editar</th>
+                        <th  class="text-center" >Anular</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of registroOT |  filter: filtrarMantenimiento  ; index as j" [ngStyle]="{'color': item.estado == '301' && 'red'}" >
+                        <td scope="row"> {{j + 1}} </td>
+                        <td>{{item.descripcionEstado}}</td> 
+                        <td>{{item.nroOT}}</td> 
+                        <td>{{item.nombreOT}}</td> 
+
+                        <td>{{item.proyecto}}</td> 
+                        <td>{{item.nombreSite}}</td> 
+                        <td>{{item.id}}</td> 
+                        <td>{{item.region}}</td> 
+                        <td>{{item.fechaApertura}}</td> 
+                        <td>
+                            <div style="width: 200px;">
+                                {{item.cliente}}
+                            </div>
+                        </td>  
+ 
+                        <td class="text-center">
+                            <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editar(item)"  >
+                        </td>
+                        <td class="text-center">
+                            <img src="./assets/img/anular.png" *ngIf="item.estado== 300" tooltip="Anular" (click)="anular(item)"  >
+                        </td>
+                    </tr> 
+                </tbody>
+            </table>
+        </div>  
+
+    </div>
+</div>
+
+
+ 
+
+ 
+<div class="modal fade " id="modal_proceso" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog  modal-xl " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeader">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModal"> REGISTRO DE OT </h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">   
+                <tabset #staticTabsPrincipal style="font-family: 'Montserrat', sans-serif; color:black im !important " >
+                    <tab heading="DATOS GENERALES" (selectTab)="selectTab($event)">    
+                        <div class="card" style="border: 1px solid #dcdfe2;">
+                            <div class="card-body"> 
+                                <form [formGroup]="formParams" >
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class=" control-label">ID</label>
+                                            <input type="text" class="form-control disabledForm"  formControlName="IdOt"  placeholder=""  >
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class=" control-label">Nro OT</label>
+                                            <input type="text" class="form-control "  [ngClass]="{'disabledForm':IdOt_Global == 0? false :true}" formControlName="NroOt" maxlength="50" placeholder=""  >
+                                        </div>          
+                                        <div class="col-md-6">
+                                            <label class=" control-label">Nombre OT</label>
+                                            <input type="text" class="form-control " [ngClass]="{'disabledForm':IdOt_Global == 0? false :true}"   formControlName="NombreOt" maxlength="250"  placeholder=""  >
+                                        </div>                      
+                                    </div>     
+                                                                            
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for=""> Proyecto</label>
+                                            <br>
+                                            <select class="form-control comboBox " formControlName="GesProyCodigo" >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option [value]="item.id" *ngFor="let item of proyectos  ">{{item.descripcion}}</option>
+                                            </select>
+                                        </div> 
+                                        <div class="col-md-5">
+                                            <label class=" control-label">Nombre Site</label>
+                                            <input type="text" class="form-control "  formControlName="NombreSite"   maxlength="250" placeholder=""  >
+                                        </div>          
+                                        <div class="col-md-4">
+                                            <label class=" control-label">ID</label>
+                                            <input type="text" class="form-control "  formControlName="NumeroIdOt"  maxlength="50"  placeholder=""  >
+                                        </div>                      
+                                    </div>        
+                                    
+                                    <div class="row" >
+                                        <div class="col-md-4">
+                                            <label for=""> Region </label>
+                                            <select class="form-control comboBox" formControlName="IdRegion" (change)="changeDepartamentoModal($event)" >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of departamentos " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for=""> Provincia </label>
+                                            <br>
+                                            <select class="form-control comboBox" formControlName="IdProvincia"  (change)="changeProvinciaModal($event)"  >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of provinciasModal " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div> 
+                                        <div class="col-md-4">
+                                            <label for=""> Distrito </label>
+                                            <br>
+                                            <select class="form-control comboBox" formControlName="IdDistrito" >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of distritosModal " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div> 
+                                    </div>  
+        
+                                    <div class="row" >
+                                        <div class="col-md-3">
+                                            <label class=" control-label">Fecha Apertura</label>
+                                            <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="FechaApertura"  [bsConfig]="datepiekerConfig">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="">  Cliente </label>
+                                            <select class="form-control comboBox" formControlName="PubCcteRucCliente"  >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of clientes " [value]="item.codigo" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>  
+                                    </div>  
+                
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class=" control-label">Jefatura Cliente Solicitante</label>
+                                            <input type="text" class="form-control "  formControlName="JefeClienteSolicitante"  maxlength="150" placeholder=""  >
+                                        </div>          
+                                        <div class="col-md-6">
+                                            <label class=" control-label">Analista del Cliente Solicitante</label>
+                                            <input type="text" class="form-control "  formControlName="AnalistaClienteSolicitante"   maxlength="150" placeholder=""  >
+                                        </div>                      
+                                    </div> 
+        
+                                    <div class="row" > 
+                                        <div class="col-md-4">
+                                            <label for="">  Coordinadores TI/CW </label>
+                                            <select class="form-control comboBox" formControlName="IdPersonalCoodinador"   >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of coordinadores " [value]="item.id" >{{item.descripcion}}   </option>
+                                            </select>
+                                        </div>  
+                                        <div class="col-md-4">
+                                            <label for="">  Jefatura Responsable </label>
+                                            <select class="form-control comboBox" formControlName="IdPersonalJefeResponsable"   >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of jefaturas " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>  
+                                    </div> 
+                                    
+                                    <div class="row" > 
+                                        <div class="col-md-4">
+                                            <label for="">  Liquidador </label>
+                                            <select class="form-control comboBox" formControlName="IdPersonalLiquidador"   >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of liquidadores " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div> 
+                                        <div class="col-md-4">
+                                            <label for="">  Ejecutante </label>
+                                            <select class="form-control comboBox" formControlName="IdPersonalEjecutante" >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of ejecutantes " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>  
+                                        <div class="col-md-4">
+                                            <label for="">  Analista Contable </label>
+                                            <select class="form-control comboBox" formControlName="IdPersonalContable"   >
+                                                <option value="0"> [ --SELECCIONE-- ]</option>
+                                                <option  *ngFor="let item of analistas " [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                    </div> 
+        
+                                    <div class="row"  >
+                                        <div class="col-md-4">
+                                            <label for=""> Estados</label>
+                                            <br>
+                                            <select class="form-control comboBox " formControlName="Estado" >
+                                                <option  *ngFor="let item of estadosModal" [value]="item.id" >{{item.descripcion}}</option>
+                                            </select>
+                                        </div>  
+                                    </div>    
+                                    
+                                    <div class="d-flex justify-content-center">
+                                        <div class="p-2 bd-highlight"  >
+                                            <button class="btn btn-success" *ngIf="flag_verEstado_Global"  (click)="saveUpdate()" title="Guardar la informacion"> <i class="fas fa-save"> Grabar</i></button>
+                                        </div>
+                                    </div>
+
+                                </form>                                              
+                            </div>
+                        </div>    
+                    </tab>
+                    <tab heading="LISTA DE DOCUMENTOS" (selectTab)="selectTab($event)" *ngIf="IdOt_Global> 0" >
+                        <div class="card" style="border: 1px solid #dcdfe2;">
+                            <div   class="card-body ">
+
+                                    <form [formGroup]="formParamsFile">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label> Tipo Documento</label>
+                                                <select class="form-control comboBox" formControlName="tipoDocumento">
+                                                <option value="0"> [ -- SELECCIONE -- ]</option>
+                                                <option [value]="item.id" *ngFor="let item of tiposDocumentos"> {{item.descripcion}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <hr>                        
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="botonFile">
+                                                <input type="file" class="form-control-file btn" formControlName="file"  (change)="onFileChange($event)" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 pt-1 text-center">
+                                                <button class="btn btn-sm btn-success" (click)="subirArchivo()"> <i class="fas fa-eye">  </i> Cargar </button>
+                                                <button class="btn btn-sm btn-warning ml-2 " (click)="blank()"> <i class="fa fa-plus-circle">  </i> Nuevo </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <hr>
+            
+                                    <div class=" tableFixHead table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead class="theadTableModal">
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Tipo Documento</th>
+                                            <th scope="col">Nombre Archivos</th>
+                                            <th scope="col">Fecha Registro</th>                     
+                                            <th scope="col">Eliminar</th>
+                                            <th scope="col">Descargar</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let item of  registroOT_archivos; index as i">
+                                            <th scope="row"> {{i + 1}} </th>
+                                            <td>{{item.nombreFile}}</td>
+                                            <td>{{item.nombreArchivo}}</td>
+                                            <td>{{item.fecha_creacion}}</td>
+                                            <td class="text-center">
+                                            <img src="./assets/img/eliminar.png"   tooltip="eliminar" (click)="eliminarArchivoSeleccionado(item)"  >
+                                            </td>
+                                            <td class="text-center">
+                                            <!-- <a class="puntero linkOpcion"  (click)=" descargarArchivoSeleccionado(item.id_OTacronimo) " title="descargar"> Descargar</a> -->
+                                            <img src="./assets/img/descargar.png"   tooltip="descargar" (click)="descargarArchivoSeleccionado(item)"  >
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </tab> 
+                </tabset>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+
+
+ 

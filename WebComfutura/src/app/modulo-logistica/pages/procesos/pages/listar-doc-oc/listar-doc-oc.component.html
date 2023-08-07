@@ -1,0 +1,76 @@
+
+<div class="card border-left-warning  shadow  ">
+    <div class="card-header">
+        <h6 class="headerTitle"> LISTAR DOCUMENTOS ORDEN DE COMPRA</h6>
+    </div>
+    <div class="card-body">
+        <form [formGroup]="formParamsFiltro">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="control-label"> Nro Orden Compra </label>
+                    <div class="input-group mb-3"> 
+                        <input type="text" class="form-control   resaltarTextoNumerico  "  formControlName="NroOc"  (keyup.enter)="buscarOC()" aria-label="Recipient's username" aria-describedby="btnBuscar">
+                        <div class="input-group-append">
+                                <button class="btn btn-primary btn-sm " style="    margin-top: -2px;"  type="button" id="btnBuscar" (click)="buscarOC()" ><i class="fas fa-search"> </i> Buscar</button>
+                        </div>
+                    </div>
+                </div>    
+                <div class="col-md-5">
+                    <label class="control-label"> Razon Social</label>
+                    <input type="text" class="form-control "  readonly formControlName="RazonSocial"   >
+                </div>  
+                <div class="col-md-3">
+                    <label class="control-label"> Forma Pago</label>
+                    <input type="text" class="form-control " readonly formControlName="FormaPago"   >
+                </div>  
+            </div>
+        </form>
+ 
+        <div  [ngClass]="{'disabledForm':IdOC_Global == 0? true :false}"  >
+
+ 
+                 <div class="d-flex justify-content-between" >
+                    <div class="p-1 bd-highlight">
+            
+                    </div>
+                    <div class="p-2 bd-highlight" style="width: 50%;">
+                        <input type="text" class="form-control form-control-sm resaltarTexto" placeholder="Buscar" maxlength="50" [(ngModel)]="filtrarMantenimiento">
+                    </div>
+                    <div class="p-2 bd-highlight"> </div>
+                </div>
+        
+                <div class=" tableFixHead">
+                    <table class="table  table-hover table-sm">
+                        <thead class="theadTable">
+        
+                            <tr style="height: 40px !important;">
+                                <th>#</th>
+                                <th> TIPO DOCUMENTO </th>
+                                <th> NOMBRE DOCUMENTO </th>
+                                <th> FECHA REGISTRO </th>      
+                                <th class="text-center" > GANADOR </th>    
+                                <th  class="text-center" >Visualizar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of documentosOC |  filter: filtrarMantenimiento  ; index as j" [ngStyle]="{'color': item.estado == '301' && 'red'}" >
+                                <td scope="row"> {{j + 1}} </td>
+                                <td>{{item.nombreFile}}</td> 
+                                <td>{{item.LogOCcoNombreArchivo}}</td> 
+                                <td>{{item.FechaCreacion}}</td>     
+                                <td class="text-center" >{{item.esGanador == 1 ? 'SI' : 'NO' }}</td>   
+                                <td class="text-center">
+                                    <img src="./assets/img/descargar.png"   tooltip="descargar" (click)="descargarArchivoSeleccionado(item)"  >
+                                </td>
+                            </tr> 
+                        </tbody>
+                    </table>
+                </div>  
+   
+
+        </div>
+
+
+    </div>
+</div>
+

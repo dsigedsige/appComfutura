@@ -1,0 +1,442 @@
+
+<div class="card border-left-warning  shadow  ">
+    <div class="card-header">
+        <h6 class="headerTitle"> LISTA DEL INGRESO DE MATERIALES </h6>
+    </div>
+    <div class="card-body">
+        <form [formGroup]="formParamsFiltro">
+            <div class="row" style="margin-top: -10px;">
+                <div class="col-md-4">
+                    <label for=""> Tipo de Ingreso</label>
+                     <select class="form-control comboBox" formControlName="tipoIngreso">
+                        <option value="0"> [ --SELECCIONE-- ]</option>
+                        <option  *ngFor="let item of tiposIngreso " [value]="item.id_MovAlmacen" >{{item.descripcion_MovAlmacen}}</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for=""> Local</label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="local"  (change)="changeLocal($event)"  >
+                        <option value="0"> [ --SELECCIONE-- ]</option>
+                        <option [value]="item.Id_Local" *ngFor="let item of locales  ">{{item.nombre_local}}</option>
+                    </select>
+                </div> 
+                <div class="col-md-4">
+                    <label for=""> Almacen</label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="almacen" >
+                        <option value="0"> [ --TODOS-- ]</option>
+                        <option [value]="item.id_Almacen" *ngFor="let item of almacenes  ">{{item.descripcion_Almacen}}</option>
+                    </select>
+                </div> 
+            </div>
+
+            <div class="row"  >
+                <div class="col-md-4">
+                    <label class="control-label"> Rango Fechas </label>
+                    <div class="input-group">
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_ini"  [bsConfig]="datepiekerConfig">
+                        <span class="input-group-addon">-</span>
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_fin" [bsConfig]="datepiekerConfig">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for=""> Estados</label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="estado" >
+                        <option value="0"> [ --TODOS-- ]</option>
+                        <option [value]="item.id_Estado" *ngFor="let item of estadosIngresoGuias  ">{{item.abreviatura_estado}}</option>
+                    </select>
+                </div> 
+                <div class="col-md-4 text-center">
+                    <br>
+                    <div class="text-center">
+                        <button class="btn btn-primary " (click)="mostrarInformacion()" style="font-size: 13px;">  <i class="fas fa-search"> </i> Mostrar </button>
+                         <button class="btn btn-warning ml-2 " (click)="nuevo()" style="font-size: 13px;">  <i class="fa fa-plus-circle"> </i> Nuevo</button>  
+                    </div>
+                </div>
+            </div>
+ 
+
+        </form>
+        <hr>
+        <div class="d-flex justify-content-between" style=" margin-top: -15px;">
+            <div class="p-1 bd-highlight">
+     
+            </div>
+            <div class="p-2 bd-highlight" style="width: 50%;">
+                <input type="text" class="form-control form-control-sm resaltarTexto" placeholder="Buscar" maxlength="50" [(ngModel)]="filtrarMantenimiento">
+            </div>
+            <div class="p-2 bd-highlight"> </div>
+        </div>
+
+        <div class=" tableFixHead">
+            <table class="table  table-hover table-sm">
+                <thead class="theadTable">
+
+                    <tr style="height: 40px !important;">
+                        <th>#</th>
+                        <th>COD. INTERNO </th>
+                        <th>ESTADO</th>
+                        <th>NRO GUIA</th>
+                        <th *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'"  >DESPACHO SIE </th>
+
+                        <th>FECHA EMISION</th>
+                        <th *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'" >AREA</th>
+                        <th  *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'" >OBRA TD</th>
+                        <th  *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'" >ESTADO OBRA </th>
+
+                        <th>ALMACEN</th>
+                        <th *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'">TIPO DE GUIA</th>
+                        <th *ngIf="formParamsFiltro.value.tipoIngreso == 'I01'">RAZON SOCIAL</th>
+
+                        <th>USUARIO CREACION</th>
+                        <th>FECHA CREACION </th>
+                        <th  class="text-center" >Editar</th>
+                        <th  class="text-center" >Anular</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of guiasCab |  filter: filtrarMantenimiento  ; index as j" [ngStyle]="{'color': item.estado == '4' && 'red'}" >
+                        <td scope="row"> {{j + 1}} </td>
+                        <td>{{item.id_guiacabecera}}</td> 
+                        <td>{{item.descripcion_estado}}</td> 
+                        <td>{{item.nro_guia}}</td> 
+                        <td *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'"  >{{item.despacho_sie}}</td> 
+
+                        <td>{{item.fecha_emision}}</td> 
+                        <td *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'" >{{item.descripcion_area}}</td> 
+                        <td  *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'" >{{item.codigo_obra}}</td> 
+                        <td  *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'"  >{{item.estado_obra}}</td> 
+
+                        <td>{{item.descripcion_almacen}}</td> 
+                        <td *ngIf="formParamsFiltro.value.tipoIngreso == 'I02'" >{{item.tipoGuia}}</td> 
+                        <td *ngIf="formParamsFiltro.value.tipoIngreso == 'I01'" >{{item.cuentacorriente}}</td> 
+                        <td>{{item.usuarioCrea}}</td> 
+                        <td>{{item.fechaCrea}}</td> 
+ 
+                        <td class="text-center">
+                            <span class="badge badge-primary puntero" title="Editar" (click)=" editar(item) " style="padding: 5px;">  <i class="fas fa-pen"></i> Editar </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-danger puntero ml-2" title="Anular"  (click)=" anular(item) " style="padding: 5px;"> <i class="fas fa-ban"></i> Anular </span>
+                        </td>
+                    </tr> 
+                </tbody>
+            </table>
+        </div>  
+
+    </div>
+</div>
+
+
+<div class="modal fade " id="modal_almacen" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog   " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeader">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" title="Retornar" (click)="cerrarModal_almacen()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModal"> SELECCIONE ALMACEN </h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" (click)="cerrarModal_almacen()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">
+                <form [formGroup]="formParams" >
+                    <div class="panel-body">                                                
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class=" control-label">Tipo Almacen</label>
+                                <select class="form-control comboBox disabledForm" formControlName="tipoAlmacen"  (change)="changeTipoAlmacenLocal($event)">
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option [value]="item.id_TipoAlmacen" *ngFor="let item of tiposAlmacen  ">{{item.nombre_TipoAlmacen}}</option>
+                                </select>
+                            </div>
+                        </div>      
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class=" control-label">Local</label>
+                                <select class="form-control comboBox" formControlName="Id_Local"  (change)="changeTipoAlmacenLocal($event)"  >
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option [value]="item.Id_Local" *ngFor="let item of locales  ">{{item.nombre_local}}</option>
+                                </select>
+                            </div>
+                        </div>                          
+                    </div>
+                </form>  
+                 <hr>
+
+                 <div class=" tableFixHead">
+                    <table class="table  table-hover table-sm">
+                        <thead class="theadTable">
+        
+                            <tr style="height: 40px !important;">
+                                <th>#</th>
+                                <th>CODIGO</th>
+                                <th>DESCRIPCION</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of almacenes_tiposAlmacenLocal  ; index as j"  >
+                                <td scope="row"> {{j + 1}} </td>
+                                <td>{{item.id_almacen}}</td> 
+                                <td>{{item.descripcion_almacen}}</td> 
+                                <td>
+                                    <img src="./assets/img/aceptar.png"   tooltip="Agregar" (click)="elegirAlmacen(item)"  >
+                                </td>  
+                            </tr> 
+                        </tbody>
+                    </table>
+                </div>  
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal_almacen()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+
+ 
+<div class="modal fade " id="modal_proceso" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog  modal-xl " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeader">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModal"> Registro de Compras de Materiales </h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">
+                <form [formGroup]="formParams" >
+
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for=""> Local</label>
+                                <br>
+                                <select class="form-control comboBox disabledForm" formControlName="Id_Local" >
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option [value]="item.Id_Local" *ngFor="let item of locales  ">{{item.nombre_local}}</option>
+                                </select>
+                            </div> 
+                            <div class="col-md-4">
+                                <label for=""> Almacen</label>
+                                <br>
+                                <select class="form-control comboBox disabledForm" formControlName="id_Almacen" >
+                                    <option value="0"> [ --TODOS-- ]</option>
+                                    <option [value]="item.id_almacen" *ngFor="let item of almacenes_tiposAlmacenLocal  ">{{item.descripcion_almacen}}</option>
+                                </select>
+                            </div> 
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <fieldset class="shadow" >
+                                    <legend> Datos de Guía de Remisión de Entrada </legend>
+                                    <div class="panel panel-default">
+                                      <div class="panel-body ">                            
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class=" control-label">ID</label>
+                                                <input type="text" class="form-control disabledForm"  formControlName="Id_AlmGuiaCab"  placeholder=""  >
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class=" control-label">Serie</label>
+                                                <input type="text" class="form-control "  formControlName="serie"  placeholder=""  >
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class=" control-label">Nro Guia</label>
+                                                <input type="text" class="form-control "  formControlName="nroDoc"  placeholder=""  >
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class=" control-label">Fecha Emision</label>
+                                                <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fechaEmisionDoc_GuiasCab"  [bsConfig]="datepiekerConfig">
+                                            </div>                                
+                                        </div>      
+  
+                                        <div class="row">
+                                            <div class="col-md-4">
+ 
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class=" control-label">Nro Orden Compra</label>
+                                                <input type="text" class="form-control "  formControlName="ordenCompra"  placeholder=""  >
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class=" control-label">Fecha</label>
+                                                <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecRegularizacion_GuiasCab"  [bsConfig]="datepiekerConfig">
+                                            </div>
+                                        </div>  
+                                      </div>
+                                    </div>                          
+                                </fieldset>
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <fieldset class="shadow" >
+                                    <legend> Datos de la Obra </legend>
+                                    <div class="panel panel-default">
+                                      <div class="panel-body ">                            
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class=" control-label">Tipo Doc</label>
+                                                <br>
+                                                <select class="form-control comboBox " formControlName="id_Moneda" >
+                                                    <option value="0"> [ SELECCIONE ]</option>
+                                                    <option [value]="item.id_TipoDocumento" *ngFor="let item of tiposDocumentosGuias  ">{{item.descripcion_Vehiculo}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class=" control-label">Moneda</label>
+                                                <select class="form-control comboBox " formControlName="id_Moneda" >
+                                                    <option value="0"> [ SELECCIONE ]</option>
+                                                    <option [value]="item.id_Moneda" *ngFor="let item of monedas  ">{{item.descripcion_moneda}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class=" control-label">Tipo Cambio</label>
+                                                <input type="text" class="form-control "  formControlName="tipoCambio_GuiasCab"  placeholder=""  >
+                                            </div>
+                                
+                                        </div>  
+
+                                        <div class="row mt-2">
+                                            <div class="col-md-3">
+                                                <label class=" control-label"> Proveedor </label>
+                                                <div class="input-group  ">                                   
+                                                    <input type="text" class="form-control formInput resaltarTexto  " (keyup.enter)="buscarCodigo('P')"  formControlName="nroRucProveedor" placeholder="nro ruc"  maxlength="30" >
+                                                    <div class="input-group-append " style="margin-top: -1px;">
+                                                      <button class="btn btn-sm btn-outline-warning" type="button" (click)="buscarCodigo('P')" ><i class="fas fa-search"> </i> </button>
+                                                    </div>
+                                                  </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <label class=" control-label">. </label>
+                                                <input type="text" class="form-control formInput"    placeholder="Descripcion" formControlName="descripcionProveedor" maxlength="250">
+                                            </div>
+                                        </div>
+
+                                      </div>
+                                    </div>                          
+                                </fieldset>
+                            </div>
+
+                        </div>                                               
+      
+
+                    </div>
+                </form>  
+
+                <div class="d-flex justify-content-center">
+                    <div class="p-2 bd-highlight">
+                        <button class="btn btn-success" (click)="saveUpdate()" title="Guardar la informacion"> <i class="fas fa-save"> Grabar</i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+
+
+<div class="modal fade " id="modal_ayuda" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeader">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModal"> Ayuda </h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">
+                <form [formGroup]="formParamsFiltro" >
+
+                    <div class="panel-body">                                                 
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class=" control-label">Buscar </label>
+                                <input type="text" class="form-control resaltarTexto"   (keyup.enter)="buscarAyudas()"     formControlName="filtro"   placeholder="" maxlength="100">
+                            </div>
+                        </div>                               
+ 
+                    </div>
+                </form>  
+
+                <hr>
+                <div class="d-flex justify-content-between" style=" margin-top: -15px;">
+                    <div class="p-1 bd-highlight">
+             
+                    </div>
+                    <div class="p-2 bd-highlight" style="width: 50%;">
+                        <input type="text" class="form-control form-control-sm resaltarTexto" placeholder="Buscar" maxlength="50" [(ngModel)]="filtrarMantenimiento">
+                    </div>
+                    <div class="p-2 bd-highlight"> </div>
+                </div>
+
+                <div class=" tableFixHead">
+                    <table class="table  table-hover table-sm">
+                        <thead class="theadTable">
+        
+                            <tr style="height: 40px !important;">
+                                <th>#</th>
+                                <th>NRO DOCUMENTO</th>
+                                <th>DESCRIPCION</th> 
+                                <th  class="text-center" >Agregar</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of ayudas |  filter: filtrarMantenimiento  ; index as j" >
+                                <td scope="row"> {{j + 1}} </td>
+                                <td>{{item.codigo}}</td> 
+                                <td>{{item.descripcion}}</td> 
+                                <td class="text-center">
+                                    <span class="badge badge-primary puntero" title="Agregar"  (click)="agregarItemAyuda(item)" style="padding: 5px;">  <i class="fas fa-plus"></i> Agregar </span>
+                                </td>
+
+                            </tr> 
+                        </tbody>
+                    </table>
+                </div>
+        
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

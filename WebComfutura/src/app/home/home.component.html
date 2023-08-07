@@ -1,0 +1,16 @@
+<app-navbar></app-navbar>
+<div class="contenedorModulo">
+    <div class="itemModulo">
+        <h2 class="headerTitleModal" >MODULOS</h2>
+         <div class="card-group ">
+            <div class="card ml-1 shadow p-3 mb-5 bg-white rounded " *ngFor="let modulo of modulos" >
+                <a class="stretched-link puntero " (click)="mostrando_MenuModulo(modulo)">
+                    <img [src]="modulo.urlmagene_principal"   alt="...">
+                </a>
+                <div class="card-body">
+                    <h5 class="headerTitleModal"> {{ modulo.nombre_principal }} </h5>
+                </div>
+            </div>
+          </div>
+    </div>
+</div>

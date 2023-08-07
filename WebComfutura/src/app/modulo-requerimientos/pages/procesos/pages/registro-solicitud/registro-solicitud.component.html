@@ -1,0 +1,292 @@
+
+<div class="card border-left-warning  shadow  ">
+    <div class="card-header">
+        <h6 class="headerTitle"> LISTA DE REQUERIMIENTOS </h6>
+    </div>
+    <div class="card-body">
+        <form [formGroup]="formParamsFiltro">
+            <div class="row" style="margin-top: -10px;">
+                <div class="col-md-4">
+                    <label  >  Region </label>
+                     <select class="form-control comboBox" formControlName="departamento" (change)="changeDepartamento($event)" >
+                        <option value="0"> [ --SELECCIONE-- ]</option>
+                        <option  *ngFor="let item of departamentos " [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label  > Provincia </label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="provincia"  >
+                        <option value="0"> [ --SELECCIONE-- ]</option>
+                        <option  *ngFor="let item of provincias " [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div> 
+                <div class="col-md-4">
+                    <label class=" control-label">Nro Requerimiento</label>
+                    <input type="text" class="form-control "  formControlName="nroRequerimiento" maxlength="50" placeholder=""  >
+                </div>    
+            </div>
+
+            <div class="row"  >
+                <div class="col-md-4">
+                    <label class="control-label"> Rango Fechas </label>
+                    <div class="input-group">
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_ini"  [bsConfig]="datepiekerConfig">
+                        <span class="input-group-addon">-</span>
+                        <input class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker formControlName="fecha_fin" [bsConfig]="datepiekerConfig">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label > Estados</label>
+                    <br>
+                    <select class="form-control comboBox" formControlName="estado" >
+                        <option value="0"> [ --TODOS-- ]</option>
+                        <option  *ngFor="let item of estados" [value]="item.id" >{{item.descripcion}}</option>
+                    </select>
+                </div> 
+                <div class="col-md-4 text-center">
+                    <br>
+                    <div class="text-center">
+                        <button class="btn btn-primary " (click)="mostrarInformacion()" style="font-size: 13px;">  <i class="fas fa-search"> </i> Mostrar </button>
+                        <button class="btn btn-warning ml-2 " (click)="nuevo()" style="font-size: 13px;">  <i class="fa fa-plus-circle"> </i> Nuevo</button>  
+                        <button class="btn btn-info ml-2"  style="font-size: 13px;" (click)="descargarGrilla()"  >  <i class="fas fa-file-download"></i> Exportar </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="d-flex justify-content-between" style=" margin-top: -15px;">
+            <div class="p-1 bd-highlight">     
+            </div>
+            <div class="p-2 bd-highlight" style="width: 50%;">
+                <input type="text" class="form-control form-control-sm resaltarTexto" placeholder="Buscar" maxlength="50" [(ngModel)]="filtrarProceso">
+            </div>
+            <div class="p-2 bd-highlight"> </div>
+        </div>
+
+        <div class=" tableFixHead">
+            <table class="table  table-hover table-sm">
+                <thead class="theadTable">
+
+                    <tr style="height: 40px !important;">
+                        <th>#</th>
+                        <th>ESTADO</th>
+                        <th>NRO REQUERIMIENTO </th>
+                        <th>FECHA REQUERIMIENTO</th> 
+ 
+                        <th>OT </th>
+                        <th>SITE </th>
+                        <th>PROYECTO</th>                        
+                        <th>TIPO TRABAJO  </th> 
+         
+                        <th  class="text-center" >EDITAR</th>
+                        <th  class="text-center" >ANULAR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of registroSolicitudCab |  filter: filtrarProceso  ; index as j" [ngStyle]="{'color': item.Estado == '323' && 'red'}" >
+                        <td scope="row"> {{j + 1}} </td>
+                        <td> 
+                            <div style="width: 150px;">
+                                {{item.descripcionEstado}}
+                            </div>
+                        </td>
+                        <td> 
+                            <div style="width: 200px;">
+                                {{item.NroSolicitud}}
+                            </div>
+                        </td> 
+                        <td>{{item.FechaSolicitud |date:"dd/MM/yyyy"  }}</td> 
+ 
+
+                        <td>{{item.NroOT}}</td> 
+                        <td>
+                            <div style="width: 200px;">
+                                {{item.Site}}
+                            </div>
+                        </td> 
+                        <td> 
+                            <div style="width: 200px;">
+                                {{item.Proyecto}}
+                            </div>
+                        </td> 
+                        <td> 
+                            <div style="width: 200px;">
+                                {{item.TipoTrabajo}}
+                            </div>
+                        </td> 
+                        <td class="text-center"> 
+                            <img src="./assets/img/editar.png"   tooltip="Editar" (click)="editar(item)"  >
+                        </td>
+                        <td class="text-center">
+                            <img src="./assets/img/anular.png" *ngIf="item.Estado== 318" tooltip="Anular" (click)="anular(item)"  >
+                        </td>
+                    </tr> 
+                </tbody>
+            </table>
+        </div>  
+    </div>
+</div> 
+
+ 
+<div class="modal fade " id="modal_proceso" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel  " aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable  modal-xl " role="document">
+        <div class="modal-content"  >
+            <div class="p-3 card  modalHeader">
+                <div class="d-flex justify-content-between flotante">
+                    <div class=" bd-highlight">
+                        <i class="fas fa-arrow-circle-left  fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                    <div class=" bd-highlight">
+                        <h5 class="headerTitleModal"> REGISTRO DE REQUERIMIENTO</h5>
+                    </div>
+                    <div class=" bd-highlight">
+                    <i class="far fa-times-circle fa-2x puntero" title="Retornar" (click)="cerrarModal()">  </i>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="modal-body">
+                <form [formGroup]="formParams" >
+
+                    <div class="panel-body">
+
+                        <div class="row">     
+                            <div class="col-md-2">
+                                <label class=" control-label">ID</label>
+                                <input type="text" class="form-control disabledForm"  formControlName="IdSolicitud"  placeholder=""  >
+                            </div>
+                            <div class="col-md-6">
+                                <label class=" control-label">Nro Presupuesto</label>
+                                <input type="text" class="form-control"  [ngClass]="{'disabledForm':IdSolicitud_Global == 0? false :true}" 
+                                    formControlName="NroPresupuesto" (keyup.enter)="buscarInformacionPresupuesto()" maxlength="50" placeholder=""  >
+                            </div>                    
+                        </div> 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class=" control-label">Nro Requerimiento</label>                               
+                                <input type="text" class="form-control  resaltarTextoUrgente"  readonly  formControlName="NroSolicitud" maxlength="100" placeholder=""  >
+                            </div>          
+                            <div class="col-md-4">
+                                <label class=" control-label">Fecha Requerimiento</label>
+                                <input class="form-control " #datepickerYMD="bsDatepicker" bsDatepicker formControlName="FechaSolicitud"  [bsConfig]="datepiekerConfig">
+                            </div>     
+                        </div>                           
+                        <div class="row">     
+                            <div class="col-md-3">
+                                <label class=" control-label">Nro OT</label>
+                                <input type="text" class="form-control disabledForm"   formControlName="NroOT"   maxlength="50" placeholder=""  >
+                            </div>  
+                            <div class="col-md-7">
+                                <label class=" control-label">Nombre Site</label>
+                                <input type="text" class="form-control disabledForm"  formControlName="NombreSite" maxlength="250"  placeholder=""  >
+                            </div>                       
+                        </div>   
+                                                                   
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label > Proyecto</label>
+                                <br>
+                                <select class="form-control comboBox disabledForm" formControlName="IdProyectoTelefonia" >
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option [value]="item.id" *ngFor="let item of proyectos  ">{{item.descripcion}}</option>
+                                </select>
+                            </div> 
+                             <div class="col-md-4">
+                                <label  > Tipo Trabajo</label>
+                                <br>
+                                <select class="form-control comboBox disabledForm " formControlName="IdTipoTrabajoTelefonia" >
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option [value]="item.id" *ngFor="let item of tiposTrabajo  ">{{item.descripcion}}</option>
+                                </select>
+                            </div>  
+                            <div class="col-md-4">
+                                <label > Estados</label>
+                                <br>
+                                <select class="form-control comboBox " formControlName="Estado" >
+                                    <option value="0"> [ --SELECCIONE-- ]</option>
+                                    <option  *ngFor="let item of estados" [value]="item.id" >{{item.descripcion}}</option>
+                                </select>
+                            </div>         
+                        </div>        
+  
+                        <div class="row" >
+                            <div class="col-md-12 ">
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-success"    *ngIf="flag_verEstado_Global"  (click)="saveUpdate()" title="Guardar la informacion"> <i class="fas fa-save"> </i> Grabar</button>
+                                </div>
+                            </div>
+                        </div>             
+
+                    </div>
+                </form>   
+ 
+                <hr>
+
+                <div   style="background-color: beige;">
+                    <tabset   #staticTabsPrincipal   style="font-family: 'Montserrat', sans-serif; color:black im !important " *ngIf="IdSolicitud_Global> 0"  >
+                        <tab heading="RESUMEN" (selectTab)="selectTab($event)" >
+                            <div class="card" style="border: 1px solid #007bff!important;">
+                                <div   class="card-body   "    [ngClass]="{'disabledForm':tabsDisabled? true :false}"  > 
+                                    <app-resumen-solicitud [IdSolicitudGlobal] = IdSolicitud_Global ></app-resumen-solicitud>
+                                </div>
+                            </div>
+                        </tab> 
+                        <tab heading="MATERIALES" (selectTab)="selectTab($event)" >
+                            <div class="card" style="border: 1px solid #007bff!important;">
+                                <div   class="card-body " [ngClass]="{'disabledForm':tabsDisabled? true :false}" > 
+                                    <app-material-solicitud [IdSolicitudGlobal] = IdSolicitud_Global  ></app-material-solicitud>
+                                </div>
+                            </div>
+                        </tab> 
+                        <tab heading="CONTRATISTAS" (selectTab)="selectTab($event)" >
+                            <div class="card" style="border: 1px solid #007bff!important;">
+                                <div   class="card-body " [ngClass]="{'disabledForm':tabsDisabled? true :false}" > 
+                                    <app-tab-grupo-solicitud [IdSolicitudGlobal] = IdSolicitud_Global  [IdTipoTabsGlobal] = 4 ></app-tab-grupo-solicitud>
+                                </div>
+                            </div>
+                        </tab> 
+                        <tab heading="FLETES GASTOS LOGISTICOS" (selectTab)="selectTab($event)" >
+                            <div class="card" style="border: 1px solid #007bff!important;">
+                                <div   class="card-body " [ngClass]="{'disabledForm':tabsDisabled? true :false}" > 
+                                    <app-tab-grupo-masivo-solicitud [IdSolicitudGlobal] = IdSolicitud_Global  [IdTipoTabsGlobal] = 5 ></app-tab-grupo-masivo-solicitud>
+                                </div>
+                            </div>
+                        </tab> 
+                         <!-- avanzando -->
+                        <!-- <tab heading="MOV CAJAS PASAJES VIATICOS" (selectTab)="selectTab($event)" >
+                            <div class="card" style="border: 1px solid #007bff!important;">
+                                <div   class="card-body " [ngClass]="{'disabledForm':tabsDisabled? true :false}" > 
+                                    <app-tab-grupo-masivo-solicitud [IdSolicitudGlobal] = IdSolicitud_Global  [IdTipoTabsGlobal] = 6 ></app-tab-grupo-masivo-solicitud>
+                                </div>
+                            </div>
+                        </tab>  -->
+                        <!-- <tab heading="VIATICOS" (selectTab)="selectTab($event)"  >
+                            <div class="card" style="border: 1px solid #007bff!important;">
+                                <div   class="card-body " [ngClass]="{'disabledForm':tabsDisabled? true :false}" > 
+                                    <app-viaticos [IdRequerimientoGlobal] = IdSolicitud_Global [IdTipoTabsGlobal] = 7  ></app-viaticos>
+                                </div>
+                            </div>
+                        </tab> 
+                        <tab heading="PLANILLA TRABAJO" (selectTab)="selectTab($event)"  >
+                            <div class="card" style="border: 1px solid #007bff!important;">
+                                <div   class="card-body " [ngClass]="{'disabledForm':tabsDisabled? true :false}" > 
+                                    <app-planilla [IdRequerimientoGlobal] = IdSolicitud_Global [IdTipoTabsGlobal] = 8  ></app-planilla>
+                                </div>
+                            </div>
+                        </tab>  -->
+                    </tabset>
+               </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+
+
+ 

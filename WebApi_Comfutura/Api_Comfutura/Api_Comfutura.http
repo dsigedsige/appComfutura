@@ -1,0 +1,9 @@
+﻿@Api_Comfutura_HostAddress = https://localhost:7087
+
+GET {{Api_Comfutura_HostAddress}}/api/tbltelefoniaotcabs/clientes
+
+###
+
+GET {{Api_Comfutura_HostAddress}}/api/registrofacturas/tiposDocumentos
+
+###

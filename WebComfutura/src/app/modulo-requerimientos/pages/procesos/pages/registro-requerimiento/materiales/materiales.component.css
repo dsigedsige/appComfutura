@@ -1,0 +1,65 @@
+.text-warning {
+    font-weight: 600;
+}
+ 
+
+/* configuracion de tabla con cabecera estatica */
+
+.tableFixHead {
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.tableFixHead thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
+/** tab control*/
+
+.nav {
+    padding: 5px;
+    font-family: Montserrat;
+    font-size: 15px;
+}
+
+.TabControl {
+    cursor: pointer;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
+    color: black !important;
+    background-color: cyan !important;
+}
+
+.containerDetalle legend {
+    font-size: 14px;
+    font-weight: 700;
+    font-family: Montserrat, sans-serif;
+    margin-bottom: 0;
+    width: 60%;
+    border-radius: 4px;
+    padding: 5px 5px 5px 10px;
+    background-color: #fff;
+    color: #003575;
+}
+
+.fa-times-circle {
+    color: gray;
+}
+
+.fa-arrow-circle-left {
+    color: gray;
+} 
+
+.table thead th {
+  text-transform: capitalize;
+}
+
+.resaltarFilaTabla {
+    text-decoration: underline red;
+    font-weight: 800;
+}
